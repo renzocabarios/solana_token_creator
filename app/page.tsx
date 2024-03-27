@@ -3,7 +3,6 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState } from "react";
 import useUmi from "./useUmi";
 import {
-  createGenericFileFromBrowserFile,
   generateSigner,
   percentAmount,
   publicKey,
@@ -17,8 +16,7 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 import { SOLANA_CONFIG } from "@/env";
-import { toWeb3JsLegacyTransaction } from "@metaplex-foundation/umi-web3js-adapters";
-import { Connection, LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js";
+import axios from "axios";
 
 export default function Home() {
   const umi = useUmi();
@@ -32,10 +30,8 @@ export default function Home() {
     decimals: 0,
   });
 
-  const [receipt, setreceipt] = useState({
-    image: 0,
-    transaction: 0,
-  });
+  const [totalCost, settotalCost] = useState(0);
+  const [mint, setmint] = useState("");
 
   const [current, setcurrent] = useState<null | any>(null);
 
@@ -47,46 +43,35 @@ export default function Home() {
   const onFileChange = async (e: any) => {
     setcurrent(e.target.files[0]);
   };
-  function LamportstoSOL(value: number): number {
-    return value / LAMPORTS_PER_SOL;
-  }
 
-  async function getEstimatedFee(
-    transaction: Transaction
-  ): Promise<number | null> {
-    const CONNECTION = new Connection(umi.rpc.getEndpoint());
-    const { blockhash, lastValidBlockHeight } =
-      await CONNECTION.getLatestBlockhash();
-    return LamportstoSOL(
-      Number((await transaction.getEstimatedFee(CONNECTION)) ?? 0)
+  const uploadOffChain = async () => {
+    const request = new FormData();
+    request.append("image", current);
+    request.append(
+      "metadata",
+      JSON.stringify({
+        name: form.name,
+        symbol: form.symbol,
+        description: form.description,
+      })
     );
-  }
+    const {
+      data: { costs, uri },
+    } = await axios.post("api/irys", request);
+
+    return { costs, uri };
+  };
 
   // TODO: Change the approach when caluclating/getting uploading costs
-  const onUpload = async () => {
-    const file = await createGenericFileFromBrowserFile(current);
-
-    const [imageUri] = await umi.uploader.upload([file]);
-    const amount = await umi.uploader.getUploadPrice([file]);
-
-    const response = await umi.uploader.uploadJson({
-      name: form.name,
-      symbol: form.symbol,
-      description: form.description,
-      image: imageUri,
-    });
-
-    setreceipt((state) => ({
-      ...state,
-      image: Number(amount.basisPoints) / 10 ** amount.decimals,
-    }));
+  const onCreateMint = async () => {
+    const BEFORE = await umi.rpc.getBalance(umi.identity.publicKey);
+    const { costs, uri } = await uploadOffChain();
 
     const mint = generateSigner(umi);
-
     const mintInstruction = createAndMint(umi, {
       mint,
       name: form.name,
-      uri: response,
+      uri: uri,
       symbol: form.symbol,
       decimals: form.decimals,
       amount: form.amount * 10 ** form.decimals,
@@ -98,25 +83,21 @@ export default function Home() {
     const transferInstruction = transferSol(umi, {
       source: umi.identity,
       destination: publicKey(SOLANA_CONFIG.treasury),
-      amount: sol(0.001),
+      amount: sol(0.001 + costs + costs),
     });
-
-    const BEFORE = await umi.rpc.getBalance(umi.identity.publicKey);
 
     const builder = transactionBuilder()
       .add(mintInstruction)
       .add(transferInstruction);
 
-    const transactionFee = await getEstimatedFee(
-      toWeb3JsLegacyTransaction(await builder.buildWithLatestBlockhash(umi))
-    );
-
-    setreceipt((state) => ({
-      ...state,
-      transaction: transactionFee ?? 0,
-    }));
-
     await builder.sendAndConfirm(umi);
+    const AFTER = await umi.rpc.getBalance(umi.identity.publicKey);
+
+    settotalCost(
+      Number(BEFORE.basisPoints) / 10 ** BEFORE.decimals -
+        Number(AFTER.basisPoints) / 10 ** AFTER.decimals
+    );
+    setmint(mint.publicKey.toString());
   };
 
   return (
@@ -185,25 +166,17 @@ export default function Home() {
             />
           </div>
           {wallet.connected && (
-            <button className="col-span-2" onClick={onUpload}>
+            <button className="col-span-2" onClick={onCreateMint}>
               Create Mint
             </button>
           )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <p>Upload Image Cost:</p>
-          <p className="text-end"> {receipt.image} SOL</p>
-          <p>Transaction Cost: </p>
-          <p className="text-end">{receipt.transaction * 2} SOL</p>
-          <p>Upload JSON Cost:</p>
-          <p className="text-end">{receipt.image} SOL</p>
-          <p>Service Cost:</p>
-          <p className="text-end">0.001 SOL</p>
           <p>Total Cost:</p>
-          <p className="text-end">
-            {receipt.transaction * 2 + receipt.image * 2 + 0.001} SOL
-          </p>
+          <p className="text-end">{totalCost} SOL</p>
+          <p>MINT ID:</p>
+          <p className="text-end">{mint}</p>
         </div>
       </div>
     </main>
