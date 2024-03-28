@@ -14,13 +14,17 @@ import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 import { SOLANA_CONFIG } from "@/env";
 import axios from "axios";
 import { Button, ImageInput, InputField, Navbar } from "@/components";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex">
-        <div className="h-[90vh] w-[15vw] bg-slate-900"></div>
+        <div className="h-[90vh] w-[15vw] flex flex-col p-3 gap-3 bg-slate-900">
+          <Link href={"/"}>Mint Tokens</Link>
+          <Link href={"/nft"}>Mint NFT</Link>
+        </div>
         <div className="flex justify-center items-center h-[90vh] w-[85vw] gap-10 ">
           <CreateMintForm />
         </div>
@@ -37,8 +41,6 @@ function CreateMintForm() {
     description: "",
     symbol: "",
     sellerFeeBasisPoints: 0,
-    amount: 0,
-    decimals: 0,
   });
 
   const [current, setcurrent] = useState<null | any>(null);
@@ -142,18 +144,7 @@ function CreateMintForm() {
         label="sellerFeeBasisPoints"
         name="sellerFeeBasisPoints"
       />
-      <InputField
-        type={"number"}
-        onChange={onInputChange}
-        label="amount"
-        name="amount"
-      />
-      <InputField
-        type={"number"}
-        onChange={onInputChange}
-        label="decimals"
-        name="decimals"
-      />
+
       {wallet.connected && (
         <div className="col-span-2">
           <Button onClick={onCreateMint} label="Create Mint" />

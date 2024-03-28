@@ -17,13 +17,17 @@ import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 import { SOLANA_CONFIG } from "@/env";
 import axios from "axios";
 import { Button, ImageInput, InputField, Navbar } from "@/components";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex">
-        <div className="h-[90vh] w-[15vw] bg-slate-900"></div>
+        <div className="h-[90vh] w-[15vw] flex flex-col p-3 gap-3 bg-slate-900">
+          <Link href={"/"}>Mint Tokens</Link>
+          <Link href={"/nft"}>Mint NFT</Link>
+        </div>
         <div className="flex justify-center items-center h-[90vh] w-[85vw] gap-10 ">
           <CreateMintForm />
         </div>
