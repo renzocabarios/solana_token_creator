@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import useUmi from "./useUmi";
+import useUmi from "../useUmi";
 import {
   generateSigner,
   percentAmount,
@@ -9,10 +9,7 @@ import {
   transactionBuilder,
 } from "@metaplex-foundation/umi";
 import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  TokenStandard,
-  createAndMint,
-} from "@metaplex-foundation/mpl-token-metadata";
+import { createNft } from "@metaplex-foundation/mpl-token-metadata";
 import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 import { SOLANA_CONFIG } from "@/env";
 import axios from "axios";
@@ -78,15 +75,12 @@ function CreateMintForm() {
     const { costs, uri } = await uploadOffChain();
 
     const mint = generateSigner(umi);
-    const mintInstruction = createAndMint(umi, {
+
+    const mintInstruction = await createNft(umi, {
       mint,
       name: form.name,
-      uri: uri,
       symbol: form.symbol,
-      decimals: form.decimals,
-      amount: form.amount * 10 ** form.decimals,
-      tokenOwner: umi.identity.publicKey,
-      tokenStandard: TokenStandard.Fungible,
+      uri,
       sellerFeeBasisPoints: percentAmount(form.sellerFeeBasisPoints),
     });
 
