@@ -1,6 +1,6 @@
 "use client";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useState } from "react";
+import { HTMLInputTypeAttribute, useState } from "react";
 import useUmi from "./useUmi";
 import {
   generateSigner,
@@ -17,8 +17,23 @@ import {
 import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 import { SOLANA_CONFIG } from "@/env";
 import axios from "axios";
+import Image from "next/image";
 
 export default function Home() {
+  return (
+    <main className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex">
+        <div className="h-[90vh] w-[15vw] bg-slate-900"></div>
+        <div className="flex justify-center items-center h-[90vh] w-[85vw] gap-10 ">
+          <CreateMintForm />
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function CreateMintForm() {
   const umi = useUmi();
   const wallet = useWallet();
   const [form, setform] = useState({
@@ -29,9 +44,6 @@ export default function Home() {
     amount: 0,
     decimals: 0,
   });
-
-  const [totalCost, settotalCost] = useState(0);
-  const [mint, setmint] = useState("");
 
   const [current, setcurrent] = useState<null | any>(null);
 
@@ -64,7 +76,6 @@ export default function Home() {
 
   // TODO: Change the approach when caluclating/getting uploading costs
   const onCreateMint = async () => {
-    const BEFORE = await umi.rpc.getBalance(umi.identity.publicKey);
     const { costs, uri } = await uploadOffChain();
 
     const mint = generateSigner(umi);
@@ -91,94 +102,142 @@ export default function Home() {
       .add(transferInstruction);
 
     await builder.sendAndConfirm(umi);
-    const AFTER = await umi.rpc.getBalance(umi.identity.publicKey);
+  };
 
-    settotalCost(
-      Number(BEFORE.basisPoints) / 10 ** BEFORE.decimals -
-        Number(AFTER.basisPoints) / 10 ** AFTER.decimals
-    );
-    setmint(mint.publicKey.toString());
+  const parseFileToString = (file: Blob | MediaSource) => {
+    let image: null | string;
+    try {
+      image = URL.createObjectURL(current);
+    } catch (_) {
+      image = null;
+    }
+    return image;
   };
 
   return (
-    <main className="min-h-screen flex flex-col ">
-      <div className="w-full  bg-slate-900 h-[10vh] flex items-center">
-        <WalletMultiButton />
+    <div className="grid grid-cols-2 gap-4 p-7 rounded-lg ">
+      <div className="col-span-2">
+        <ImageInput
+          image={parseFileToString(current)}
+          onChange={onFileChange}
+          label="name"
+          name="name"
+        />
       </div>
-      <div className="flex justify-center items-center h-[90vh] gap-10">
-        <div className="grid grid-cols-2 gap-4 p-7 max-w-96 max-h-96 bg-slate-900 rounded-lg">
-          <div className="flex flex-col col-span-2">
-            <p className="text-xs">image</p>
-            <input type="file" onChange={onFileChange} className="text-black" />
-          </div>
-          <div className="flex flex-col">
-            <p className="text-xs">name</p>
-            <input
-              name="name"
-              type="text"
-              onChange={onInputChange}
-              className="text-black"
-            />
-          </div>
-          <div className="flex flex-col">
-            <p className="text-xs">symbol</p>
-            <input
-              name="symbol"
-              type="text"
-              onChange={onInputChange}
-              className="text-black"
-            />
-          </div>
-          <div className="flex flex-col">
-            <p className="text-xs">description</p>
-            <input
-              name="description"
-              type="text"
-              onChange={onInputChange}
-              className="text-black"
-            />
-          </div>
-          <div className="flex flex-col">
-            <p className="text-xs">seller fee basis points</p>
-            <input
-              name="sellerFeeBasisPoints"
-              type="number"
-              onChange={onInputChange}
-              className="text-black"
-            />
-          </div>{" "}
-          <div className="flex flex-col">
-            <p className="text-xs">amount</p>
-            <input
-              name="amount"
-              type="number"
-              onChange={onInputChange}
-              className="text-black"
-            />
-          </div>{" "}
-          <div className="flex flex-col">
-            <p className="text-xs">decimals</p>
-            <input
-              name="decimals"
-              type="number"
-              onChange={onInputChange}
-              className="text-black"
-            />
-          </div>
-          {wallet.connected && (
-            <button className="col-span-2" onClick={onCreateMint}>
-              Create Mint
-            </button>
-          )}
-        </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <p>Total Cost:</p>
-          <p className="text-end">{totalCost} SOL</p>
-          <p>MINT ID:</p>
-          <p className="text-end">{mint}</p>
+      <InputField
+        type={"text"}
+        onChange={onInputChange}
+        label="name"
+        name="name"
+      />
+      <InputField
+        type={"text"}
+        onChange={onInputChange}
+        label="symbol"
+        name="symbol"
+      />
+      <InputField
+        type={"text"}
+        onChange={onInputChange}
+        label="description"
+        name="description"
+      />
+      <InputField
+        type={"number"}
+        onChange={onInputChange}
+        label="sellerFeeBasisPoints"
+        name="sellerFeeBasisPoints"
+      />
+      <InputField
+        type={"number"}
+        onChange={onInputChange}
+        label="amount"
+        name="amount"
+      />
+      <InputField
+        type={"number"}
+        onChange={onInputChange}
+        label="decimals"
+        name="decimals"
+      />
+      {wallet.connected && (
+        <div className="col-span-2">
+          <Button onClick={onCreateMint} label="Create Mint" />
         </div>
-      </div>
-    </main>
+      )}
+    </div>
+  );
+}
+interface ButtonProps {
+  onClick: (e: any) => void;
+  label: string;
+}
+
+function Button({ label, onClick }: ButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className="bg-slate-900 py-3 px-4 rounded-md text-medium w-full"
+    >
+      {label}
+    </button>
+  );
+}
+
+interface ImageInputProps {
+  onChange: (e: any) => void;
+  name: string;
+  label: string;
+  image: string | null;
+}
+
+function ImageInput({ image, name, onChange }: ImageInputProps) {
+  return (
+    <label className="flex justify-center gap-2 w-full">
+      <Image
+        src={image ?? "https://placehold.co/300x300.png?text=Upload+Image"}
+        alt={image ?? "https://placehold.co/300x300.png?text=Upload+Image"}
+        height={300}
+        width={300}
+        className="rounded-2xl h-64 w-64"
+      />
+      <input
+        name={name}
+        type={"file"}
+        onChange={onChange}
+        className="text-black rounded-md px-2 py-1 bg-slate-700 hidden"
+      />
+    </label>
+  );
+}
+
+interface InputFieldProps {
+  onChange: (e: any) => void;
+  name: string;
+  label: string;
+  type: HTMLInputTypeAttribute | undefined;
+}
+
+function InputField({ label, name, onChange, type }: InputFieldProps) {
+  return (
+    <div className="flex flex-col gap-2 ">
+      <p className=" text-gray-200">{label}</p>
+      <input
+        name={name}
+        type={type}
+        onChange={onChange}
+        className="text-gray-300 rounded-md px-2 py-1 bg-slate-700"
+      />
+    </div>
+  );
+}
+
+function Navbar() {
+  return (
+    <div className="w-full bg-slate-900 h-[10vh] flex justify-between items-center px-10">
+      <p className="text-xl font-semibold">Solana Meme Coin Generator</p>
+      <WalletMultiButton />
+    </div>
   );
 }
