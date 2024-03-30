@@ -36,16 +36,27 @@ export default function FindByMint() {
         programAccountsConfig
       );
 
-    listOfTokens.forEach((e: any) => {
-      console.log(e.account.data.parsed.info.owner);
-    });
-
     setowners(
       listOfTokens.map((e: any) => {
         return e.account.data.parsed.info.owner;
       })
     );
-    console.log(listOfTokens.length);
+  };
+
+  const exportUserInfo = (userInfo: any[]) => {
+    const fileData =
+      "wallet \r\n" +
+      userInfo.reduce((acc: any, curr: any) => curr + "\r\n" + acc, "");
+    const blob = new Blob([fileData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = `${mint}.csv`;
+    link.href = url;
+    link.click();
+  };
+
+  const onDowload = () => {
+    exportUserInfo(owners);
   };
 
   const onHandleChange = (e: any) => {
@@ -61,10 +72,8 @@ export default function FindByMint() {
         type={"test"}
       />
       <Button onClick={onSearch} label="Search"></Button>
-
-      {owners.map((owner) => {
-        return <p>{owner}</p>;
-      })}
+      <Button onClick={onDowload} label="Download to CSV"></Button>
+      {owners.length !== 0 && <p>Found {owners.length} wallets</p>}
     </>
   );
 }
