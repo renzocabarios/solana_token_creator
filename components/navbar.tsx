@@ -10,7 +10,7 @@ export function Navbar() {
   }, [setmounted]);
 
   return (
-    <div className="w-full bg-slate-900 h-[10vh] flex justify-between items-center px-10">
+    <div className="w-[85vw] bg-slate-900 h-[10vh] flex justify-between items-center px-10">
       <p className="text-xl font-semibold">Solana Meme Coin Generator</p>
       {mounted && <WalletMultiButton />}
     </div>
