@@ -1,5 +1,4 @@
 "use client";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { useEffect, useState } from "react";
@@ -10,7 +9,6 @@ import {
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { SOLANA_CONFIG } from "@/env";
 import { Navbar } from "@/components/navbar";
-import Link from "next/link";
 require("@solana/wallet-adapter-react-ui/styles.css");
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,15 +29,13 @@ export default function RootLayout({
         <ConnectionProvider endpoint={SOLANA_CONFIG.rpc}>
           <WalletProvider wallets={[]} autoConnect>
             <WalletModalProvider>
-              <main className="min-h-screen flex flex-col">
-                <Navbar />
-                <div className="flex">
-                  <div className="h-[90vh] w-[15vw] flex flex-col p-3 gap-3 bg-slate-900">
-                    <Link href={"/"}>Mint Tokens</Link>
-                    <Link href={"/nft"}>Mint NFT</Link>
-                    <Link href={"/find-by-mint"}>Find By Mint</Link>
+              <main className="min-h-screen flex">
+                <Sidenav />
+                <div className="flex flex-col">
+                  <Navbar />
+                  <div className="h-[90vh] w-[85vw] p-5">
+                    {mounted && children}
                   </div>
-                  <div className="h-[90vh] w-[85vw]">{mounted && children}</div>
                 </div>
               </main>
             </WalletModalProvider>
@@ -49,3 +45,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+import React from "react";
+import { Sidenav } from "@/components/sidenav";
