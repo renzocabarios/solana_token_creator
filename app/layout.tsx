@@ -8,7 +8,8 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { SOLANA_CONFIG } from "@/env";
-import { Navbar } from "@/components/navbar";
+import Warning from "./(components)/warning";
+
 require("@solana/wallet-adapter-react-ui/styles.css");
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,14 +31,8 @@ export default function RootLayout({
           <WalletProvider wallets={[]} autoConnect>
             <WalletModalProvider>
               <main className="bg-slate-800 min-h-screen">
-                {/* <Sidenav />
-                <div className="flex flex-col">
-                  <Navbar />
-                  <div className="h-[90vh] w-[85vw] p-5">
-                    {mounted && children}
-                  </div>
-                </div> */}
-                {mounted && children}
+                <Warning />
+                <div className="h-[95vh]">{mounted && children}</div>
               </main>
             </WalletModalProvider>
           </WalletProvider>
@@ -46,5 +41,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-import React from "react";
