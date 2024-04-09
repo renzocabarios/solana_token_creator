@@ -1818,6 +1818,11 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
+"@radix-ui/react-icons@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-icons/-/react-icons-1.3.0.tgz#c61af8f323d87682c5ca76b856d60c2312dbcb69"
+  integrity sha512-jQxj/0LKgp+j9BiTXz3O3sgs26RNet2iLWmsPyRz2SIcR4q/4SbazXfnYwbAr+vLYKSfc7qxzyGQA1HLlYiuNw==
+
 "@radix-ui/react-label@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-label/-/react-label-2.0.2.tgz#9c72f1d334aac996fdc27b48a8bdddd82108fb6d"
@@ -6460,6 +6465,11 @@ lucide-react@^0.366.0:
   version "0.366.0"
   resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.366.0.tgz#d26606621ca7e36293991367ea0f8dc558ea8acc"
   integrity sha512-iUOsp/35wOkrgEzigZlZI/OhVxQZ8CmxjebdIjfSDzNBmrNYjQfKSpeKderaEFfGt3OycF1BE+wLlaqWRuoh4w==
+
+lucide@^0.366.0:
+  version "0.366.0"
+  resolved "https://registry.yarnpkg.com/lucide/-/lucide-0.366.0.tgz#8b94dfb74340991f60b06c65b88d0376970561a0"
+  integrity sha512-Q+vot+JdFc06b0AS21rnqedp1EV0et37FQofFWbbWmWzYScZviooPcA1qIF03bgBaJoQ5E1N7TwgCZXhPKiebQ==
 
 md5.js@^1.3.4:
   version "1.3.5"
