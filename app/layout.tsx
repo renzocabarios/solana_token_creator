@@ -32,7 +32,7 @@ export default function RootLayout({
             <WalletModalProvider>
               <main className="bg-slate-800 min-h-screen">
                 <Warning />
-                <div className="h-[95vh]">{mounted && children}</div>
+                <div className="min-h-[95vh]">{mounted && children}</div>
               </main>
             </WalletModalProvider>
           </WalletProvider>
