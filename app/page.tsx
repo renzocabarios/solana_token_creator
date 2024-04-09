@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="h-full flex justify-center items-center flex-col gap-2">
+    <div className="min-h-[95vh] flex justify-center items-center flex-col gap-2">
       <p className="text-white font-semibold text-2xl">
         This site is under Construction
       </p>
