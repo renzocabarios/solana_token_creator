@@ -29,7 +29,7 @@ export default function RootLayout({
         <ConnectionProvider endpoint={SOLANA_CONFIG.rpc}>
           <WalletProvider wallets={[]} autoConnect>
             <WalletModalProvider>
-              <main className="">
+              <main className="bg-slate-800 min-h-screen">
                 {/* <Sidenav />
                 <div className="flex flex-col">
                   <Navbar />
