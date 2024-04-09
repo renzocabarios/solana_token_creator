@@ -1,9 +1,15 @@
-import CreateFtForm from "./(form)/create-ft";
+"use client";
+import { useCreateToken } from "@/lib/zustand/create-token.store";
+import CreateMetadata from "./(form)/create-metadata";
+import CreateToken from "./(form)/create-token";
 
 export default function CreateFt() {
-  return (
-    <>
-      <CreateFtForm />
-    </>
-  );
+  const { page, handleNextPage, handleBackPage } = useCreateToken();
+
+  switch (page) {
+    case 1:
+      return <CreateToken />;
+    default:
+      return <CreateMetadata />;
+  }
 }

@@ -29,14 +29,15 @@ export default function RootLayout({
         <ConnectionProvider endpoint={SOLANA_CONFIG.rpc}>
           <WalletProvider wallets={[]} autoConnect>
             <WalletModalProvider>
-              <main className="min-h-screen flex">
-                <Sidenav />
+              <main className="">
+                {/* <Sidenav />
                 <div className="flex flex-col">
                   <Navbar />
                   <div className="h-[90vh] w-[85vw] p-5">
                     {mounted && children}
                   </div>
-                </div>
+                </div> */}
+                {mounted && children}
               </main>
             </WalletModalProvider>
           </WalletProvider>

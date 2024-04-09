@@ -16,7 +16,7 @@ import {
 import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 import { SOLANA_CONFIG } from "@/env";
 import axios from "axios";
-import { Button, ImageInput, InputField } from "@/components";
+import { Button } from "@/components/ui/button";
 
 function CreateFtForm() {
   const umi = useUmi();
@@ -100,8 +100,8 @@ function CreateFtForm() {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-7 rounded-lg ">
-      <div className="col-span-2">
+    <div>
+      {/* <div className="col-span-2">
         <ImageInput
           image={parseFileToString(current)}
           onChange={onFileChange}
@@ -150,7 +150,7 @@ function CreateFtForm() {
         <div className="col-span-2">
           <Button onClick={onCreateMint} label="Create Mint" />
         </div>
-      )}
+      )} */}
     </div>
   );
 }
