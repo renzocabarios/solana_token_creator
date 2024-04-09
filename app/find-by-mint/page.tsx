@@ -1,5 +1,4 @@
 "use client";
-import { Button, InputField } from "@/components";
 import { useState } from "react";
 import { SOLANA_CONFIG } from "@/env";
 import { PublicKey } from "@solana/web3.js";
@@ -65,7 +64,7 @@ export default function FindByMint() {
 
   return (
     <>
-      <InputField
+      {/* <InputField
         onChange={onHandleChange}
         name={"mint"}
         label={"Mint Address"}
@@ -73,7 +72,7 @@ export default function FindByMint() {
       />
       <Button onClick={onSearch} label="Search"></Button>
       <Button onClick={onDowload} label="Download to CSV"></Button>
-      {owners.length !== 0 && <p>Found {owners.length} wallets</p>}
+      {owners.length !== 0 && <p>Found {owners.length} wallets</p>} */}
     </>
   );
 }
