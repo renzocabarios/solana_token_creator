@@ -48,4 +48,3 @@ export default function RootLayout({
 }
 
 import React from "react";
-import { Sidenav } from "@/components/sidenav";
