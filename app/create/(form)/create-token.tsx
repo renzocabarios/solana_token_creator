@@ -29,6 +29,8 @@ export default function CreateToken() {
   const { handleNextPage, handleBackPage, setMint } = useCreateToken();
 
   const onSubmit = (value: MintSchema) => {
+    console.log(value);
+
     setMint(value);
     handleNextPage();
   };
@@ -163,13 +165,7 @@ export default function CreateToken() {
             >
               Back
             </Button>
-            <Button
-              onClick={() => {
-                handleNextPage();
-              }}
-            >
-              Next
-            </Button>
+            <Button type="submit">Next</Button>
           </div>
         </form>
       </Form>

@@ -6,7 +6,7 @@ import { MintSchema, mintDefaults } from "../schemas/mint.schema";
 interface CreateTokenState {
   page: number;
   metadata: MetadataSchema;
-  mint: MetadataSchema;
+  mint: MintSchema;
 }
 
 interface CreateTokenActions {
