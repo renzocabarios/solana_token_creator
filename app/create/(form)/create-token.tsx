@@ -13,12 +13,23 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateToken } from "@/lib/zustand/create-token.store";
+import {
+  MintSchema,
+  mintDefaults,
+  mintSchema,
+} from "@/lib/schemas/mint.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function CreateToken() {
-  const form = useForm();
-  const { handleNextPage, handleBackPage } = useCreateToken();
+  const form = useForm<MintSchema>({
+    resolver: zodResolver(mintSchema),
+    defaultValues: mintDefaults,
+  });
 
-  const onSubmit = () => {
+  const { handleNextPage, handleBackPage, setMint } = useCreateToken();
+
+  const onSubmit = (value: MintSchema) => {
+    setMint(value);
     handleNextPage();
   };
 
@@ -32,7 +43,7 @@ export default function CreateToken() {
           <div className="col-span-1">
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Name</FormLabel>
@@ -51,7 +62,7 @@ export default function CreateToken() {
           <div className="col-span-1">
             <FormField
               control={form.control}
-              name="username"
+              name="symbol"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Symbol</FormLabel>
@@ -70,15 +81,15 @@ export default function CreateToken() {
           <div className="col-span-2">
             <FormField
               control={form.control}
-              name="username"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Description</FormLabel>
                   <FormControl>
                     <div className="grid w-full gap-1.5">
                       <Textarea
+                        {...field}
                         placeholder="Type your message here."
-                        id="message-2"
                       />
                     </div>
                   </FormControl>
@@ -93,7 +104,7 @@ export default function CreateToken() {
 
           <FormField
             control={form.control}
-            name="username"
+            name="amount"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-white">Amount</FormLabel>
@@ -110,7 +121,7 @@ export default function CreateToken() {
 
           <FormField
             control={form.control}
-            name="username"
+            name="sellerFeeBasisPoints"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-white">
@@ -129,7 +140,7 @@ export default function CreateToken() {
 
           <FormField
             control={form.control}
-            name="username"
+            name="decimals"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-white">Decimals</FormLabel>
