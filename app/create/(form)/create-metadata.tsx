@@ -13,15 +13,26 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateToken } from "@/lib/zustand/create-token.store";
+import {
+  MetadataSchema,
+  metadataDefaults,
+  metadataSchema,
+} from "@/lib/schemas/metadata.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function CreateMetadata() {
-  const form = useForm();
+  const { handleNextPage, setMetadata } = useCreateToken();
 
-  const { handleNextPage } = useCreateToken();
+  const form = useForm<MetadataSchema>({
+    resolver: zodResolver(metadataSchema),
+    defaultValues: metadataDefaults,
+  });
 
-  const onSubmit = () => {
+  const onSubmit = (values: MetadataSchema) => {
+    setMetadata(values);
     handleNextPage();
   };
+
   return (
     <>
       <Form {...form}>
@@ -30,28 +41,16 @@ export default function CreateMetadata() {
           className="grid grid-cols-2 gap-4"
         >
           <div className="col-span-2">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Image</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="file" />
-                  </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col gap-2">
+              <p className="text-white">Image</p>
+              <Input type="file" />
+            </div>
           </div>
 
           <div className="col-span-1">
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Name</FormLabel>
@@ -69,7 +68,7 @@ export default function CreateMetadata() {
           <div className="col-span-1">
             <FormField
               control={form.control}
-              name="username"
+              name="symbol"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Symbol</FormLabel>
@@ -87,15 +86,15 @@ export default function CreateMetadata() {
           <div className="col-span-2">
             <FormField
               control={form.control}
-              name="username"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-white">Description</FormLabel>
                   <FormControl>
                     <div className="grid w-full gap-1.5">
                       <Textarea
+                        {...field}
                         placeholder="Type your message here."
-                        id="message-2"
                       />
                     </div>
                   </FormControl>
