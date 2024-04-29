@@ -2,12 +2,92 @@
 import { Button } from "@/components/ui/button";
 
 import { useCreateToken } from "@/lib/zustand/create-token.store";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  MINT_SIZE,
+  TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccountInstruction,
+  createInitializeMint2Instruction,
+  getAssociatedTokenAddressSync,
+  getMinimumBalanceForRentExemptMint,
+} from "@solana/spl-token";
+import {
+  SystemProgram,
+  Transaction,
+  Keypair,
+  TransactionMessage,
+  VersionedTransaction,
+  Signer,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export default function ReviewDetails() {
   const { metadata, mint, handleBackPage } = useCreateToken();
+  const { connection } = useConnection();
+  const { publicKey, signTransaction } = useWallet();
+
+  const onCreate = async () => {
+    console.log({ metadata, mint });
+
+    if (publicKey && signTransaction) {
+      const mintKeypair = Keypair.generate();
+      const lamports = await getMinimumBalanceForRentExemptMint(connection);
+
+      const associatedToken = getAssociatedTokenAddressSync(
+        mintKeypair.publicKey,
+        publicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
+      let blockhash = await connection
+        .getLatestBlockhash()
+        .then((res) => res.blockhash);
+      const transaction = new Transaction()
+        .add(
+          SystemProgram.createAccount({
+            fromPubkey: publicKey,
+            newAccountPubkey: mintKeypair.publicKey,
+            space: MINT_SIZE,
+            lamports,
+            programId: TOKEN_PROGRAM_ID,
+          })
+        )
+        .add(
+          createInitializeMint2Instruction(
+            mintKeypair.publicKey,
+            mint.decimals,
+            publicKey,
+            publicKey,
+            TOKEN_PROGRAM_ID
+          )
+        )
+        .add(
+          createAssociatedTokenAccountInstruction(
+            publicKey,
+            associatedToken,
+            publicKey,
+            mintKeypair.publicKey,
+            TOKEN_PROGRAM_ID,
+            ASSOCIATED_TOKEN_PROGRAM_ID
+          )
+        );
+
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+      const signed = await signTransaction(transaction);
+
+      const tx = sendAndConfirmTransaction(connection, signed, [mintKeypair]);
+      console.log(mintKeypair.publicKey.toString());
+      console.log(tx.toString());
+    }
+  };
 
   return (
     <div className="flex flex-col gap-5">
+      <WalletMultiButton />
       <div className="flex flex-col gap-3 text-white">
         <p className="text-2xl font-bold">Metadata Details</p>
         <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700" />
@@ -68,7 +148,7 @@ export default function ReviewDetails() {
         >
           Back
         </Button>
-        <Button>Create</Button>
+        <Button onClick={onCreate}>Create</Button>
       </div>
     </div>
   );
