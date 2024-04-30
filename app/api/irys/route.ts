@@ -1,6 +1,4 @@
-//app/api/test/route.js
-
-import { SOLANA_CONFIG } from "@/env";
+import { SOLANA } from "@/config";
 import {
   createGenericFileFromBrowserFile,
   keypairIdentity,
@@ -12,10 +10,8 @@ import { NextResponse } from "next/server";
 import { mplToolbox } from "@metaplex-foundation/mpl-toolbox";
 
 function generateUMI() {
-  const umi = createUmi(SOLANA_CONFIG.rpc)
-    .use(irysUploader())
-    .use(mplToolbox());
-  const serialized = base58.serialize(SOLANA_CONFIG.payer_private_key);
+  const umi = createUmi(SOLANA.rpc).use(irysUploader()).use(mplToolbox());
+  const serialized = base58.serialize(SOLANA.payer_private_key);
   const keypair = umi.eddsa.createKeypairFromSecretKey(serialized);
   umi.use(keypairIdentity(keypair));
   return umi;
@@ -42,8 +38,6 @@ export async function POST(request: Request) {
 
   const file = await createGenericFileFromBrowserFile(imageFile);
 
-  const imageUploadPrice = await umi.uploader.getUploadPrice([file]);
-
   const [image] = await umi.uploader.upload([file]);
 
   const metadataJSON = await umi.uploader.uploadJson({
@@ -52,8 +46,6 @@ export async function POST(request: Request) {
   });
 
   return NextResponse.json({
-    costs:
-      Number(imageUploadPrice.basisPoints) / 10 ** imageUploadPrice.decimals,
     uri: metadataJSON,
   });
 }
