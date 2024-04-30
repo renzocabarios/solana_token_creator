@@ -1,4 +1,4 @@
-import useUmi from "@/app/useUmi";
+import useUmi from "@/hooks/useUmi";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { MintFormSchema } from "@/lib/schemas/mint-form.schema";

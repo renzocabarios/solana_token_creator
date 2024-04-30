@@ -1,4 +1,4 @@
-import { SOLANA } from "@/config";
+import { SOLANA_CONFIG } from "@/config";
 import {
   createGenericFileFromBrowserFile,
   keypairIdentity,
@@ -10,8 +10,10 @@ import { NextResponse } from "next/server";
 import { mplToolbox } from "@metaplex-foundation/mpl-toolbox";
 
 function generateUMI() {
-  const umi = createUmi(SOLANA.rpc).use(irysUploader()).use(mplToolbox());
-  const serialized = base58.serialize(SOLANA.payer_private_key);
+  const umi = createUmi(SOLANA_CONFIG.rpc)
+    .use(irysUploader())
+    .use(mplToolbox());
+  const serialized = base58.serialize(SOLANA_CONFIG.payer_private_key);
   const keypair = umi.eddsa.createKeypairFromSecretKey(serialized);
   umi.use(keypairIdentity(keypair));
   return umi;

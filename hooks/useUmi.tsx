@@ -1,4 +1,4 @@
-import { SOLANA } from "@/config";
+import { SOLANA_CONFIG } from "@/config";
 import { mplToolbox } from "@metaplex-foundation/mpl-toolbox";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
@@ -8,7 +8,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 function useUmi() {
   const wallet = useWallet();
 
-  const umi = createUmi(SOLANA.rpc)
+  const umi = createUmi(SOLANA_CONFIG.rpc)
     .use(walletAdapterIdentity(wallet))
     .use(irysUploader())
     .use(mplToolbox());

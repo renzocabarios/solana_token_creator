@@ -5,7 +5,7 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { SOLANA_CONFIG } from "@/env";
+import { SOLANA_CONFIG } from "@/config";
 import Warning from "./warning";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
